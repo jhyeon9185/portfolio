@@ -1,0 +1,21 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(npm run *)",
+      "Bash(curl -s http://localhost:5173)",
+      "WebFetch(domain:portavia.framer.website)",
+      "Bash(npm install *)",
+      "Bash(node -e \"const si = require\\('c:/portfolio/node_modules/react-icons/si'\\); const keys = ['SiReact','SiTypescript','SiJavascript','SiVite','SiTailwindcss','SiOpenjdk','SiJava','SiSpring','SiMysql','SiDocker','SiRedis','SiGit','SiJsonwebtokens']; keys.forEach\\(k => console.log\\(k, !!si[k]\\)\\)\")",
+      "WebFetch(domain:api.github.com)",
+      "WebFetch(domain:apex-template.framer.website)",
+      "Bash(node -e \"const lu = require\\('c:/portfolio/node_modules/react-icons/lu'\\); ['LuHouse','LuUser','LuBriefcase','LuMail','LuSun','LuMoon'].forEach\\(k => console.log\\(k, !!lu[k]\\)\\)\")",
+      "Bash(node -e \"const si = require\\('c:/portfolio/node_modules/react-icons/si'\\); ['SiNodedotjs','SiNextdotjs','SiExpress','SiMongodb','SiPostgresql','SiGraphql','SiNestjs','SiPrisma'].forEach\\(k => console.log\\(k, !!si[k]\\)\\)\")",
+      "Bash(curl -s -o /dev/null -w \"%{http_code}\" http://localhost:5173)",
+      "WebFetch(domain:framer.com)",
+      "WebFetch(domain:framerusercontent.com)",
+      "Bash(curl -s \"https://framerusercontent.com/modules/qEw2E1QBHAljABJJYcW3/2dM9NFG6Jmq01DkqOxDk/InteractiveDotGrid_1.js\")",
+      "Bash(pkill -f \"vite\")",
+      "Bash(pkill -f \"node.*dev\")"
+    ]
+  }
+}
