@@ -126,7 +126,7 @@ const projects = [
     ],
     github: 'https://github.com/jhyeon9185/62-daeng-nyang-public',
     demo: null,
-    pdf: '/portfolio_v2.pdf',
+    pdf: `${import.meta.env.BASE_URL}portfolio_v2.pdf`,
   },
   {
     num: '02',
@@ -143,7 +143,7 @@ const projects = [
     ],
     github: 'https://github.com/jhyeon9185/daypoo',
     demo: null,
-    pdf: '/portfolio_v2.pdf',
+    pdf: `${import.meta.env.BASE_URL}portfolio_v2.pdf`,
   },
 ]
 

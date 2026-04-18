@@ -119,7 +119,7 @@ export default function About() {
               whileHover={{ rotate: [0, -2, 2, -1, 1, 0], transition: { duration: 0.5, ease: 'easeInOut' } }}
               style={{ cursor: 'pointer' }}
             >
-              <img src="/profile.png" alt="Baek Jonghyun" className="about-photo" />
+              <img src={`${import.meta.env.BASE_URL}profile.png`} alt="Baek Jonghyun" className="about-photo" />
             </motion.div>
 
             {/* Info card */}
