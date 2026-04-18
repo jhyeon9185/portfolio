@@ -488,9 +488,9 @@ button {
 
 .about-grid {
   display: grid;
-  grid-template-columns: 1fr 320px;
+  grid-template-columns: 1fr 300px;
   gap: 5rem;
-  align-items: start;
+  align-items: center;
 }
 
 .about-heading {
@@ -529,8 +529,6 @@ button {
   display: flex;
   flex-direction: column;
   gap: 1.25rem;
-  position: sticky;
-  top: 100px;
 }
 
 /* Photo */
@@ -643,46 +641,177 @@ button {
 }
 
 /* Tech Stack icon grid */
-.about-skills { margin-top: 2.5rem; }
-.skills-heading {
-  font-size: 0.65rem;
-  font-weight: 700;
-  letter-spacing: 0.18em;
-  text-transform: uppercase;
-  color: var(--text-3);
-  margin-bottom: 1rem;
-}
 .tool-grid {
   display: grid;
   grid-template-columns: repeat(4, 1fr);
-  gap: 0.6rem;
+  grid-auto-rows: 1fr;
+  gap: 0.75rem;
+  flex: 1;
 }
 .tool-card {
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 0.5rem;
+  justify-content: center;
+  gap: 0.7rem;
   padding: 1rem 0.5rem;
-  border-radius: 12px;
+  border-radius: 14px;
   border: 1px solid var(--border);
   background: var(--bg);
-  font-size: 0.68rem;
-  color: var(--text-3);
-  letter-spacing: 0.04em;
-  transition: border-color var(--t), color var(--t), background var(--t);
+  font-size: 0.74rem;
+  color: var(--text-2);
+  letter-spacing: 0.02em;
+  font-weight: 500;
+  transition: border-color var(--t), color var(--t), background var(--t), transform var(--t);
   cursor: default;
 }
 .tool-card:hover {
   border-color: var(--accent);
-  color: var(--text-2);
-  background: var(--surface);
+  color: var(--text);
+  transform: translateY(-2px);
 }
 .tool-icon {
-  font-size: 1.6rem;
-  opacity: 0.72;
-  transition: opacity var(--t);
+  font-size: 1.75rem;
+  opacity: 0.8;
+  transition: opacity var(--t), color var(--t);
+}
+.tool-card:hover .tool-icon {
+  opacity: 1;
+  color: var(--accent);
 }
 .tool-card:hover .tool-icon { opacity: 1; }
+
+/* ── About 하단 패널 (Tech Stack | Collaboration) ── */
+.about-panels {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1.25rem;
+  margin-top: 2.5rem;
+  align-items: stretch;
+}
+
+.about-panel {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 20px;
+  padding: 2.25rem;
+  display: flex;
+  flex-direction: column;
+  min-height: 380px;
+}
+
+.panel-label {
+  font-size: 0.78rem;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--accent);
+  margin-bottom: 1.75rem;
+}
+
+/* Collab tool pills */
+.collab-tools-row {
+  display: flex;
+  gap: 0.6rem;
+  flex-wrap: wrap;
+  margin-bottom: 1.5rem;
+}
+
+.collab-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.52rem 1.1rem;
+  border: 1px solid var(--border);
+  border-radius: 50px;
+  font-size: 0.85rem;
+  font-weight: 500;
+  color: var(--text-2);
+  transition: border-color var(--t), color var(--t), background var(--t);
+  cursor: default;
+}
+
+.collab-pill:hover {
+  border-color: var(--accent);
+  color: var(--text);
+  background: var(--bg);
+}
+
+.collab-pill-icon {
+  font-size: 1.05rem;
+  opacity: 0.75;
+}
+
+/* Principle — 아이콘 카드형 */
+.principles-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  flex: 1;
+  justify-content: flex-end;
+}
+
+.principle-item {
+  display: flex;
+  flex-direction: column;
+  gap: 0.55rem;
+  padding: 1.15rem 1.25rem;
+  border-radius: 14px;
+  border: 1px solid var(--border);
+  background: var(--bg);
+  transition: border-color var(--t), background var(--t);
+  flex: 1;
+  justify-content: center;
+}
+
+.principle-item:hover {
+  border-color: var(--accent);
+}
+
+.principle-head {
+  display: flex;
+  align-items: center;
+  gap: 0.65rem;
+}
+
+.principle-icon-wrap {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 30px;
+  height: 30px;
+  border-radius: 8px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  color: var(--accent);
+  flex-shrink: 0;
+}
+
+.principle-icon {
+  font-size: 0.95rem;
+}
+
+.principle-title {
+  font-size: 0.95rem;
+  font-weight: 700;
+  color: var(--text);
+  letter-spacing: -0.01em;
+}
+
+.principle-desc {
+  font-size: 0.84rem;
+  color: var(--text-2);
+  line-height: 1.65;
+  margin: 0;
+  word-break: keep-all;
+  padding-left: 0.2rem;
+}
+
+@media (max-width: 900px) {
+  .about-panels {
+    grid-template-columns: 1fr;
+  }
+}
 
 .skill-pill {
   padding: 0.4rem 1rem;

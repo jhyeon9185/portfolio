@@ -2,24 +2,38 @@ import { motion } from 'framer-motion'
 import {
   SiReact, SiTypescript, SiOpenjdk, SiSpring,
   SiMysql, SiDocker, SiTailwindcss, SiGit,
+  SiSlack, SiNotion, SiFigma,
 } from 'react-icons/si'
+import { LuFileText, LuMessagesSquare } from 'react-icons/lu'
 
 const toolIcons = [
-  // Frontend
   { label: 'React',      Icon: SiReact },
   { label: 'TypeScript', Icon: SiTypescript },
   { label: 'Tailwind',   Icon: SiTailwindcss },
-  // Backend
   { label: 'Java 21',    Icon: SiOpenjdk },
   { label: 'Spring',     Icon: SiSpring },
   { label: 'MySQL',      Icon: SiMysql },
-  // Infra
   { label: 'Docker',     Icon: SiDocker },
   { label: 'Git',        Icon: SiGit },
 ]
 
-const experience = [
-  { period: '2025.10 — 2026.04', title: '[기업연계형] ChatGPT 활용 및 DevOps 개발자 부트캠프' },
+const collaboration = [
+  { label: 'Slack',  Icon: SiSlack },
+  { label: 'Notion', Icon: SiNotion },
+  { label: 'Figma',  Icon: SiFigma },
+]
+
+const principles = [
+  {
+    Icon:  LuFileText,
+    title: '문서화의 습관',
+    desc:  '결과만큼 과정을 기록하여 팀의 기술 부채를 줄입니다.',
+  },
+  {
+    Icon:  LuMessagesSquare,
+    title: '유연한 소통',
+    desc:  '디자인과 기획의 의도를 이해하고 최선의 기술적 대안을 제시합니다.',
+  },
 ]
 
 const infoLines = [
@@ -53,6 +67,22 @@ const fadeUp = (delay = 0) => ({
   transition: { duration: 0.7, ease: [0.22, 1, 0.36, 1], delay },
 })
 
+/* Stagger variants — 부모가 자식을 순차 애니메이션 */
+const staggerContainer = {
+  hidden: {},
+  visible: {
+    transition: { staggerChildren: 0.07, delayChildren: 0.15 },
+  },
+}
+
+const staggerItem = {
+  hidden:  { opacity: 0, y: 18 },
+  visible: {
+    opacity: 1, y: 0,
+    transition: { duration: 0.5, ease: [0.22, 1, 0.36, 1] },
+  },
+}
+
 export default function About() {
   return (
     <section id="about" className="about">
@@ -63,8 +93,8 @@ export default function About() {
           <span>About</span>
         </motion.div>
 
+        {/* ── 상단 2-col: 텍스트 | 사진+정보 ── */}
         <div className="about-grid">
-          {/* Left */}
           <div className="about-text">
             <motion.div {...fadeUp(0.05)}>
               <AnimatedHeading />
@@ -75,41 +105,9 @@ export default function About() {
               서비스 전체를 직접 구현하는 Full Stack Developer.<br />
               실제 이슈를 끝까지 파고드는 것을 중요하게 생각합니다.
             </motion.p>
-
-            {/* Experience */}
-            <motion.div className="about-exp" {...fadeUp(0.15)}>
-              {experience.map((e) => (
-                <div key={e.title} className="exp-item">
-                  <span className="exp-period">{e.period}</span>
-                  <span className="exp-title">{e.title}</span>
-                </div>
-              ))}
-            </motion.div>
-
-            {/* Tech Stack icon grid */}
-            <motion.div className="about-skills" {...fadeUp(0.2)}>
-              <p className="skills-heading">Tech Stack</p>
-              <div className="tool-grid">
-                {toolIcons.map(({ label, Icon }, i) => (
-                  <motion.div
-                    key={label}
-                    className="tool-card"
-                    initial={{ opacity: 0, y: 12 }}
-                    whileInView={{ opacity: 1, y: 0 }}
-                    viewport={{ once: true }}
-                    transition={{ duration: 0.35, delay: i * 0.04 }}
-                  >
-                    <Icon className="tool-icon" />
-                    <span>{label}</span>
-                  </motion.div>
-                ))}
-              </div>
-            </motion.div>
           </div>
 
-          {/* Right: photo + info */}
           <div className="about-side">
-            {/* Photo — 보더 없이, 호버 시 귀여운 흔들림 */}
             <motion.div
               className="about-photo-wrap"
               initial={{ opacity: 0, y: 20 }}
@@ -122,7 +120,6 @@ export default function About() {
               <img src={`${import.meta.env.BASE_URL}profile.png`} alt="Baek Jonghyun" className="about-photo" />
             </motion.div>
 
-            {/* Info card */}
             <div className="about-info">
               {infoLines.map((item, i) => (
                 <motion.div
@@ -143,6 +140,81 @@ export default function About() {
             </div>
           </div>
         </div>
+
+        {/* ── 하단 2-col: Tech Stack | Collaboration ── */}
+        <motion.div
+          className="about-panels"
+          variants={staggerContainer}
+          initial="hidden"
+          whileInView="visible"
+          viewport={{ once: true, margin: '-80px' }}
+        >
+
+          {/* Tech Stack 패널 */}
+          <motion.div className="about-panel" variants={staggerItem}>
+            <motion.p className="panel-label" variants={staggerItem}>Tech Stack</motion.p>
+            <motion.div
+              className="tool-grid"
+              variants={staggerContainer}
+            >
+              {toolIcons.map(({ label, Icon }) => (
+                <motion.div
+                  key={label}
+                  className="tool-card"
+                  variants={staggerItem}
+                >
+                  <Icon className="tool-icon" />
+                  <span>{label}</span>
+                </motion.div>
+              ))}
+            </motion.div>
+          </motion.div>
+
+          {/* Collaboration 패널 */}
+          <motion.div className="about-panel" variants={staggerItem}>
+            <motion.p className="panel-label" variants={staggerItem}>Collaboration</motion.p>
+
+            {/* 툴 pill 행 */}
+            <motion.div
+              className="collab-tools-row"
+              variants={staggerContainer}
+            >
+              {collaboration.map(({ label, Icon }) => (
+                <motion.div
+                  key={label}
+                  className="collab-pill"
+                  variants={staggerItem}
+                >
+                  <Icon className="collab-pill-icon" />
+                  {label}
+                </motion.div>
+              ))}
+            </motion.div>
+
+            {/* 원칙 카드 */}
+            <motion.div
+              className="principles-list"
+              variants={staggerContainer}
+            >
+              {principles.map((p, i) => (
+                <motion.div
+                  key={i}
+                  className="principle-item"
+                  variants={staggerItem}
+                >
+                  <div className="principle-head">
+                    <span className="principle-icon-wrap">
+                      <p.Icon className="principle-icon" />
+                    </span>
+                    <span className="principle-title">{p.title}</span>
+                  </div>
+                  <p className="principle-desc">{p.desc}</p>
+                </motion.div>
+              ))}
+            </motion.div>
+          </motion.div>
+
+        </motion.div>
       </div>
     </section>
   )
