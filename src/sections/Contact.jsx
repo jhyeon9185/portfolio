@@ -3,7 +3,7 @@ import { motion } from 'framer-motion'
 
 const socials = [
   { label: 'GitHub', href: 'https://github.com/jhyeon9185' },
-  { label: 'Portfolio PDF', href: `${import.meta.env.BASE_URL}portfolio_v2.pdf` },
+  { label: 'Portfolio PDF', href: `${import.meta.env.BASE_URL}portfolio_v3.pdf` },
 ]
 
 function Reveal({ children, delay = 0 }) {

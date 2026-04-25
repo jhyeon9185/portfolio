@@ -15,7 +15,8 @@
       "WebFetch(domain:framerusercontent.com)",
       "Bash(curl -s \"https://framerusercontent.com/modules/qEw2E1QBHAljABJJYcW3/2dM9NFG6Jmq01DkqOxDk/InteractiveDotGrid_1.js\")",
       "Bash(pkill -f \"vite\")",
-      "Bash(pkill -f \"node.*dev\")"
+      "Bash(pkill -f \"node.*dev\")",
+      "Bash(git add *)"
     ]
   }
 }
