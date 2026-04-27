@@ -1,112 +1,239 @@
 import { useState, useEffect, useRef } from 'react'
-import { motion, AnimatePresence } from 'framer-motion'
+import { motion } from 'framer-motion'
 
-const SEGMENTS = 8
-
-function TubesCursor({ sectionRef }) {
-  const dotRefs  = useRef([])
-  const posRef   = useRef(Array.from({ length: SEGMENTS }, () => ({ x: -300, y: -300 })))
-  const mouseRef = useRef({ x: -300, y: -300 })
-  const activeRef = useRef(false)
-  const timeRef  = useRef(0)
-  const rafRef   = useRef()
+/* ── Silky Mouse Trail (ported from framer.com/marketplace/components/silky-mouse-trail) ── */
+function SilkyMouseTrail({ sectionRef }) {
+  const canvasRef = useRef(null)
 
   useEffect(() => {
-    const el = sectionRef.current
-    if (!el) return
+    const wrapper = sectionRef.current
+    const canvas  = canvasRef.current
+    if (!wrapper || !canvas) return
 
-    const setOpacity = (active) => {
-      dotRefs.current.forEach((d, i) => {
-        if (!d) return
-        d.style.opacity = active
-          ? `${1 - i * 0.1}`
-          : `${Math.max(0, 0.13 - i * 0.012)}`
-      })
+    const ctx = canvas.getContext('2d')
+
+    const S = {
+      length:           60,
+      headWidth:        7,
+      tailWidth:        0,
+      headColor:        [255, 77, 0, 0.92],   // accent orange, opaque
+      tailColor:        [255, 77, 0, 0],       // transparent tail
+      damping:          0.55,
+      inertiaRetention: 0.8,
+      inertiaInfluence: 0.3,
+      inertiaStrength:  0.025,
+      speedInfluence:   0.9,
+      speedMax:         600,
+      speedSmoothing:   0.2,
     }
 
-    const onMove  = (e) => { mouseRef.current = { x: e.clientX, y: e.clientY } }
-    const onEnter = () => { activeRef.current = true;  setOpacity(true)  }
-    const onLeave = () => { activeRef.current = false; setOpacity(false) }
+    const mk = () => Array.from({ length: S.length }, () => ({ x: 0, y: 0, vx: 0, vy: 0, nx: 0, ny: 0 }))
 
-    el.addEventListener('mousemove',  onMove)
-    el.addEventListener('mouseenter', onEnter)
-    el.addEventListener('mouseleave', onLeave)
+    const state = {
+      points:      mk(),
+      leftEdges:   Array.from({ length: S.length }, () => ({ x: 0, y: 0 })),
+      rightEdges:  Array.from({ length: S.length }, () => ({ x: 0, y: 0 })),
+      mouse:       { x: 0, y: 0 },
+      lastMouse:   { x: 0, y: 0 },
+      lastTime:    performance.now(),
+      speedRatio:  0,
+      isActive:    false,
+      w: 0, h: 0,
+      rect:        new DOMRect(),
+    }
 
-    setOpacity(false)
+    let raf = null
+    let visible = false
 
-    const lerps = Array.from({ length: SEGMENTS }, (_, i) => 0.22 - i * 0.022)
+    const updateRect = () => {
+      state.rect = wrapper.getBoundingClientRect()
+      state.w = state.rect.width
+      state.h = state.rect.height
+      const dpr = window.devicePixelRatio || 1
+      canvas.width  = state.w * dpr
+      canvas.height = state.h * dpr
+      ctx.setTransform(dpr, 0, 0, dpr, 0, 0)
+    }
 
-    const tick = () => {
-      timeRef.current += 0.007
+    const onPointerMove = (e) => {
+      const r = state.rect
+      const inside = e.clientX >= r.left && e.clientX <= r.right &&
+                     e.clientY >= r.top  && e.clientY <= r.bottom
+      if (!inside) { state.isActive = false; return }
 
-      let head
-      if (activeRef.current) {
-        head = mouseRef.current
-      } else {
-        const rect = el.getBoundingClientRect()
-        const cx = rect.left + rect.width  * 0.5
-        const cy = rect.top  + rect.height * 0.78
-        const rx = rect.width  * 0.21
-        const ry = rect.height * 0.1
-        const t  = timeRef.current
-        head = {
-          x: cx + rx * Math.sin(t),
-          y: cy + ry * Math.sin(t * 2),
-        }
+      const x = e.clientX - r.left
+      const y = e.clientY - r.top
+      const now = performance.now()
+
+      if (!state.isActive) {
+        state.isActive = true
+        state.lastMouse = { x, y }
+        state.mouse     = { x, y }
+        state.lastTime  = now
+        state.points.forEach(p => { p.x = x; p.y = y; p.vx = 0; p.vy = 0 })
+        return
       }
 
-      const chain = [head, ...posRef.current.slice(0, SEGMENTS - 1)]
-      posRef.current = posRef.current.map((p, i) => ({
-        x: p.x + (chain[i].x - p.x) * lerps[i],
-        y: p.y + (chain[i].y - p.y) * lerps[i],
-      }))
-
-      posRef.current.forEach((pos, i) => {
-        const d = dotRefs.current[i]
-        if (!d) return
-        const prev = i === 0 ? head : posRef.current[i - 1]
-        const dx = prev.x - pos.x
-        const dy = prev.y - pos.y
-        const angle = Math.atan2(dy, dx) * (180 / Math.PI) + 90
-        const w = 10 - i * 0.6
-        const h = w * 2.2
-        d.style.transform = `translate(${pos.x - w / 2}px, ${pos.y - h / 2}px) rotate(${angle}deg)`
-        d.style.width  = `${w}px`
-        d.style.height = `${h}px`
-      })
-
-      rafRef.current = requestAnimationFrame(tick)
+      const dt    = Math.max(1, now - state.lastTime) / 1000
+      const dist  = Math.hypot(x - state.lastMouse.x, y - state.lastMouse.y)
+      const speed = dist / dt
+      state.speedRatio += (Math.min(1, speed / S.speedMax) - state.speedRatio) * S.speedSmoothing
+      state.lastMouse = { x, y }
+      state.lastTime  = now
+      state.mouse.x = x
+      state.mouse.y = y
     }
 
-    rafRef.current = requestAnimationFrame(tick)
+    const physics = () => {
+      if (!state.isActive) return
+      const sm = 1 + S.speedInfluence * state.speedRatio
+      const head = state.points[0]
+      let rdx = state.mouse.x - head.x
+      let rdy = state.mouse.y - head.y
+
+      if (Math.abs(rdx) < 0.1 && Math.abs(rdy) < 0.1 && Math.abs(head.vx) < 0.1 && Math.abs(head.vy) < 0.1) {
+        head.x = state.mouse.x; head.y = state.mouse.y
+        head.vx = 0; head.vy = 0; rdx = 0; rdy = 0
+      }
+
+      const pull = S.damping + 0.1
+      const dx = rdx * pull, dy = rdy * pull
+      head.vx = head.vx * S.inertiaRetention + dx * S.inertiaInfluence * sm
+      head.vy = head.vy * S.inertiaRetention + dy * S.inertiaInfluence * sm
+      head.x += dx + head.vx * S.inertiaStrength * sm
+      head.y += dy + head.vy * S.inertiaStrength * sm
+
+      for (let i = 1; i < S.length; i++) {
+        const prev = state.points[i - 1], curr = state.points[i]
+        const ddx = (prev.x - curr.x) * S.damping
+        const ddy = (prev.y - curr.y) * S.damping
+        curr.vx = curr.vx * S.inertiaRetention + ddx * S.inertiaInfluence * 2
+        curr.vy = curr.vy * S.inertiaRetention + ddy * S.inertiaInfluence * 4
+        curr.x += ddx + curr.vx * S.inertiaStrength
+        curr.y += ddy + curr.vy * S.inertiaStrength
+      }
+    }
+
+    const edges = () => {
+      const sm  = 1 + S.speedInfluence * state.speedRatio
+      const p   = state.points
+      const len = p.length
+      const MIN = 0.5
+
+      for (let i = 0; i < len; i++) {
+        const prog = i / (len - 1)
+        const w    = (S.headWidth * (1 - prog) + S.tailWidth * prog) * sm
+        const curr = p[i], next = p[i + 1] || p[i], prev = p[i - 1] || p[i]
+        let nx = curr.nx || 0, ny = curr.ny || 0
+
+        if (i === 0) {
+          const dx = next.x - curr.x, dy = next.y - curr.y
+          const d2 = dx * dx + dy * dy
+          if (d2 > MIN) { const d = 1 / Math.sqrt(d2); nx = -dy * d; ny = dx * d }
+        } else if (i === len - 1) {
+          const dx = curr.x - prev.x, dy = curr.y - prev.y
+          const d2 = dx * dx + dy * dy
+          if (d2 > MIN) { const d = 1 / Math.sqrt(d2); nx = -dy * d; ny = dx * d }
+          else          { nx = p[i - 1].nx; ny = p[i - 1].ny }
+        } else {
+          const dx1 = curr.x - prev.x, dy1 = curr.y - prev.y
+          const dx2 = next.x - curr.x, dy2 = next.y - curr.y
+          const d1 = dx1*dx1 + dy1*dy1, d2 = dx2*dx2 + dy2*dy2
+          if (d1 > MIN || d2 > MIN) {
+            let nx1 = 0, ny1 = 0, nx2 = 0, ny2 = 0
+            if (d1 > 1e-10) { const r = 1/Math.sqrt(d1); nx1 = -dy1*r; ny1 = dx1*r }
+            if (d2 > 1e-10) { const r = 1/Math.sqrt(d2); nx2 = -dy2*r; ny2 = dx2*r }
+            nx = (nx1 + nx2) / 2; ny = (ny1 + ny2) / 2
+            const sq = nx*nx + ny*ny
+            if (sq > 1e-10) { const r = 1/Math.sqrt(sq); nx *= r; ny *= r }
+          } else { nx = p[i - 1].nx; ny = p[i - 1].ny }
+        }
+
+        curr.nx = nx; curr.ny = ny
+        const hw = w / 2
+        state.leftEdges[i].x  = curr.x + nx * hw; state.leftEdges[i].y  = curr.y + ny * hw
+        state.rightEdges[i].x = curr.x - nx * hw; state.rightEdges[i].y = curr.y - ny * hw
+      }
+    }
+
+    const draw = () => {
+      ctx.clearRect(0, 0, state.w, state.h)
+      if (!state.isActive) return
+      const len = S.length
+      const [hr, hg, hb, ha] = S.headColor
+      const [tr, tg, tb, ta] = S.tailColor
+
+      for (let i = 0; i < len - 1; i++) {
+        const p1 = i / (len - 1), p2 = (i + 1) / (len - 1)
+        const lerp = (a, b, t) => a + (b - a) * t
+        const a1 = ha + (ta - ha) * p1, a2 = ha + (ta - ha) * p2
+        const r1 = Math.round(lerp(hr, tr, p1)), g1 = Math.round(lerp(hg, tg, p1)), b1 = Math.round(lerp(hb, tb, p1))
+        const r2 = Math.round(lerp(hr, tr, p2)), g2 = Math.round(lerp(hg, tg, p2)), b2 = Math.round(lerp(hb, tb, p2))
+        const curr = state.points[i], next = state.points[i + 1]
+        const dsq  = (next.x - curr.x) ** 2 + (next.y - curr.y) ** 2
+
+        ctx.beginPath()
+        ctx.moveTo(state.leftEdges[i].x,   state.leftEdges[i].y)
+        ctx.lineTo(state.leftEdges[i+1].x, state.leftEdges[i+1].y)
+        ctx.lineTo(state.rightEdges[i+1].x,state.rightEdges[i+1].y)
+        ctx.lineTo(state.rightEdges[i].x,  state.rightEdges[i].y)
+        ctx.closePath()
+
+        if (dsq > 0.25) {
+          const grad = ctx.createLinearGradient(curr.x, curr.y, next.x, next.y)
+          grad.addColorStop(0, `rgba(${r1},${g1},${b1},${a1})`)
+          grad.addColorStop(1, `rgba(${r2},${g2},${b2},${a2})`)
+          ctx.fillStyle = grad
+        } else {
+          ctx.fillStyle = `rgba(${r1},${g1},${b1},${a1})`
+        }
+        ctx.fill()
+      }
+    }
+
+    const tick = () => {
+      if (!visible) return
+      physics(); edges(); draw()
+      raf = requestAnimationFrame(tick)
+    }
+
+    const io = new IntersectionObserver(([entry]) => {
+      visible = entry.isIntersecting
+      if (visible) {
+        updateRect()
+        if (!raf) { state.lastTime = performance.now(); tick() }
+      } else {
+        if (raf) { cancelAnimationFrame(raf); raf = null }
+      }
+    }, { threshold: 0 })
+    io.observe(wrapper)
+
+    const ro = new ResizeObserver(updateRect)
+    ro.observe(wrapper)
+
+    window.addEventListener('pointermove', onPointerMove, { passive: true })
+    window.addEventListener('scroll',      updateRect,    { passive: true })
 
     return () => {
-      el.removeEventListener('mousemove',  onMove)
-      el.removeEventListener('mouseenter', onEnter)
-      el.removeEventListener('mouseleave', onLeave)
-      cancelAnimationFrame(rafRef.current)
+      io.disconnect(); ro.disconnect()
+      window.removeEventListener('pointermove', onPointerMove)
+      window.removeEventListener('scroll',      updateRect)
+      if (raf) cancelAnimationFrame(raf)
     }
   }, [sectionRef])
 
   return (
-    <div style={{ position: 'fixed', inset: 0, pointerEvents: 'none', zIndex: 9999 }}>
-      {Array.from({ length: SEGMENTS }, (_, i) => (
-        <div
-          key={i}
-          ref={el => dotRefs.current[i] = el}
-          style={{
-            position: 'fixed',
-            top: 0, left: 0,
-            borderRadius: '9999px',
-            background: 'var(--accent)',
-            opacity: 0,
-            pointerEvents: 'none',
-            transition: 'opacity 0.5s',
-            filter: i === 0 ? 'none' : `blur(${i * 0.3}px)`,
-          }}
-        />
-      ))}
-    </div>
+    <canvas
+      ref={canvasRef}
+      style={{
+        position: 'absolute',
+        inset: 0,
+        width: '100%',
+        height: '100%',
+        pointerEvents: 'none',
+        zIndex: 1,
+      }}
+    />
   )
 }
 
@@ -114,9 +241,10 @@ const projects = [
   {
     num: '01',
     title: '62댕냥이',
-    subtitle: '유기동물 입양·임시보호 매칭 플랫폼',
+    tagline: '유기동물 입양·임시보호 매칭 플랫폼',
+    description: '전국 유기동물 보호소 데이터를 통합하고 JWT 이중 토큰 + OAuth2 소셜 로그인으로 안전한 인증 시스템을 직접 설계했습니다.',
     role: 'Backend · Spring Security · JWT 설계',
-    year: '2026.01.26 — 02.13',
+    year: '2026.01',
     tags: ['Java 21', 'Spring Boot 3.2', 'Spring Security', 'JWT', 'OAuth2', 'JPA', 'MySQL'],
     contributions: [
       'JWT Access / Refresh 이중 토큰 구조 직접 설계 및 구현',
@@ -125,15 +253,15 @@ const projects = [
       '역할 기반 API 접근 제어 (RBAC) 구현',
     ],
     github: 'https://github.com/jhyeon9185/62-daeng-nyang-public',
-    demo: null,
     pdf: `${import.meta.env.BASE_URL}portfolio_v3.pdf`,
   },
   {
     num: '02',
     title: 'DAYPOO',
-    subtitle: '실시간 공공데이터 기반 건강 관리 서비스',
+    tagline: '실시간 공공데이터 기반 건강 관리 서비스',
+    description: 'Vite 번들 66% 감소, SSE 인증 보안 이슈 직접 해결, PWA로 iOS 크로스플랫폼 대응까지 — 성능과 안정성을 함께 개선했습니다.',
     role: 'Frontend · UI/UX 설계',
-    year: '2026.03.19 — 04.09',
+    year: '2026.03',
     tags: ['React', 'TypeScript', 'Vite', 'Tailwind CSS', 'SSE', 'PWA', 'Redis'],
     contributions: [
       'Vite 번들 최적화로 66% 감소 (1.8MB → 620KB)',
@@ -142,219 +270,139 @@ const projects = [
       'PWA 적용으로 iOS 크로스 플랫폼 대응',
     ],
     github: 'https://github.com/jhyeon9185/daypoo',
-    demo: null,
     pdf: `${import.meta.env.BASE_URL}portfolio_v3.pdf`,
   },
 ]
 
-/* 모달 */
-function Modal({ project, onClose }) {
+function ProjectCard({ project, index }) {
+  const [hover, setHover] = useState(false)
+
   return (
-    <AnimatePresence>
-      {project && (
-        <>
-          {/* Backdrop */}
-          <motion.div
-            className="modal-backdrop"
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            transition={{ duration: 0.3 }}
-            onClick={onClose}
-          />
+    <motion.div
+      initial={{ opacity: 0, y: 40 }}
+      whileInView={{ opacity: 1, y: 0 }}
+      viewport={{ once: true, margin: '-60px' }}
+      transition={{ duration: 0.7, delay: index * 0.12, ease: [0.22, 1, 0.36, 1] }}
+    >
+      <article
+        className="pcard"
+        onMouseEnter={() => setHover(true)}
+        onMouseLeave={() => setHover(false)}
+      >
+        <div
+          className="pcard-ghost"
+          style={{ transform: hover ? 'translate(-16px, 10px)' : 'none', transition: 'transform 0.4s cubic-bezier(.2,.9,.3,1.4)' }}
+        >
+          {project.num}
+        </div>
 
-          {/* Panel wrapper — flex로 센터링, FM transform 충돌 방지 */}
-          <div className="modal-wrapper">
-            <motion.div
-              className="modal-panel"
-              initial={{ opacity: 0, scale: 0.96, y: 16 }}
-              animate={{ opacity: 1, scale: 1, y: 0 }}
-              exit={{ opacity: 0, scale: 0.96, y: 8 }}
-              transition={{ duration: 0.35, ease: [0.22, 1, 0.36, 1] }}
-            >
-            {/* Header */}
-            <div className="modal-header">
-              <div>
-                <p className="modal-num">{project.num}</p>
-                <h2 className="modal-title">{project.title}</h2>
-                <p className="modal-subtitle">{project.subtitle}</p>
-              </div>
-              <button className="modal-close" onClick={onClose} aria-label="닫기">✕</button>
-            </div>
-
-            <div className="modal-divider" />
-
-            {/* Meta */}
-            <div className="modal-meta">
-              <div className="modal-meta-item">
-                <span className="modal-meta-label">Role</span>
-                <span className="modal-meta-value">{project.role}</span>
-              </div>
-              <div className="modal-meta-item">
-                <span className="modal-meta-label">Period</span>
-                <span className="modal-meta-value">{project.year}</span>
-              </div>
-            </div>
-
-            <div className="modal-divider" />
-
-            {/* Contributions */}
-            <div className="modal-section">
-              <p className="modal-section-label">Key Contributions</p>
-              <ul className="modal-contributions">
-                {project.contributions.map((c, i) => (
-                  <motion.li
-                    key={i}
-                    initial={{ opacity: 0, x: -12 }}
-                    animate={{ opacity: 1, x: 0 }}
-                    transition={{ duration: 0.35, delay: 0.15 + i * 0.06 }}
-                  >
-                    <span className="modal-bullet">—</span>
-                    {c}
-                  </motion.li>
-                ))}
-              </ul>
-            </div>
-
-            <div className="modal-divider" />
-
-            {/* Tags */}
-            <div className="modal-section">
-              <p className="modal-section-label">Tech Stack</p>
-              <div className="modal-tags">
-                {project.tags.map((t) => (
-                  <span key={t} className="work-tag">{t}</span>
-                ))}
-              </div>
-            </div>
-
-            {/* Links */}
-            {(project.github || project.demo || project.pdf) && (
-              <>
-                <div className="modal-divider" />
-                <div className="modal-links">
-                  {project.github && (
-                    <a href={project.github} target="_blank" rel="noreferrer" className="modal-link">
-                      GitHub ↗
-                    </a>
-                  )}
-                  {project.pdf && (
-                    <a href={project.pdf} target="_blank" rel="noreferrer" className="modal-link">
-                      Portfolio PDF ↗
-                    </a>
-                  )}
-                  {project.demo && (
-                    <a href={project.demo} target="_blank" rel="noreferrer" className="modal-link modal-link-accent">
-                      Live Demo ↗
-                    </a>
-                  )}
-                </div>
-              </>
-            )}
-            </motion.div>
+        <div className="pcard-left">
+          <div className="pcard-meta">
+            <span className="pcard-line" />
+            <span>{project.year} · {project.role}</span>
           </div>
-        </>
-      )}
-    </AnimatePresence>
+
+          <h3 className="pcard-title">{project.title}</h3>
+          <p className="pcard-tagline">{project.tagline}</p>
+          <p className="pcard-desc">{project.description}</p>
+
+          <div className="pcard-tags">
+            {project.tags.map((t) => (
+              <span key={t} className="pcard-tag">{t}</span>
+            ))}
+          </div>
+
+          <div
+            className="pcard-reveal"
+            style={{
+              maxHeight: hover ? '240px' : '0',
+              opacity: hover ? 1 : 0,
+              transition: 'max-height 0.5s cubic-bezier(.2,.7,.2,1), opacity 0.4s',
+            }}
+          >
+            <div className="pcard-reveal-inner">
+              {project.contributions.map((c, i) => (
+                <div key={i} className="pcard-contrib">
+                  <span className="pcard-bullet">✦</span>
+                  <span>{c}</span>
+                </div>
+              ))}
+            </div>
+          </div>
+
+          <a
+            href={project.github}
+            target="_blank"
+            rel="noreferrer"
+            className="pcard-cta"
+            style={{ opacity: hover ? 1 : 0.55, transition: 'opacity 0.3s' }}
+          >
+            자세히 보기
+            <span style={{ display: 'inline-block', transform: hover ? 'translateX(6px)' : 'translateX(0)', transition: 'transform 0.3s' }}>→</span>
+          </a>
+        </div>
+
+        <div className="pcard-right">
+          <div className="pcard-links-panel">
+            <p className="pcard-links-label">Links</p>
+            <div className="pcard-links">
+              {project.github && (
+                <a href={project.github} target="_blank" rel="noreferrer" className="pcard-link">
+                  <span className="pcard-link-icon">↗</span>
+                  GitHub
+                </a>
+              )}
+              {project.pdf && (
+                <a href={project.pdf} target="_blank" rel="noreferrer" className="pcard-link">
+                  <span className="pcard-link-icon">↗</span>
+                  Portfolio PDF
+                </a>
+              )}
+            </div>
+          </div>
+          <div className="pcard-num-badge">{project.num}</div>
+        </div>
+      </article>
+    </motion.div>
   )
 }
 
 export default function Works() {
-  const [selected, setSelected] = useState(null)
   const sectionRef = useRef(null)
 
   return (
-    <>
-      <TubesCursor sectionRef={sectionRef} />
-      <section id="works" className="works" ref={sectionRef}>
-        <div className="container" style={{ width: '100%' }}>
-          <motion.div
-            className="section-label"
-            initial={{ opacity: 0, y: 24 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            transition={{ duration: 0.6, ease: [0.22, 1, 0.36, 1] }}
-          >
-            <span className="section-num">03</span>
-            <span className="section-line" />
-            <span>Works</span>
-          </motion.div>
+    <section id="works" className="works" ref={sectionRef}>
+      <SilkyMouseTrail sectionRef={sectionRef} />
+      <div className="container" style={{ width: '100%' }}>
+        <motion.div
+          className="section-label"
+          initial={{ opacity: 0, y: 24 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true }}
+          transition={{ duration: 0.6, ease: [0.22, 1, 0.36, 1] }}
+        >
+          <span className="section-num">03</span>
+          <span className="section-line" />
+          <span>Works</span>
+        </motion.div>
 
-          <motion.div
-            className="works-header"
-            initial={{ opacity: 0, y: 24 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            transition={{ duration: 0.6, delay: 0.05, ease: [0.22, 1, 0.36, 1] }}
-          >
-            <h2 className="works-title">Selected Works</h2>
-            <span className="works-count">0{projects.length} Projects</span>
-          </motion.div>
+        <motion.div
+          className="works-header"
+          initial={{ opacity: 0, y: 24 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true }}
+          transition={{ duration: 0.6, delay: 0.05, ease: [0.22, 1, 0.36, 1] }}
+        >
+          <h2 className="works-title">Selected Works</h2>
+          <span className="works-count">0{projects.length} Projects</span>
+        </motion.div>
 
-          <div className="work-list">
-            {projects.map((project, i) => (
-              <motion.div
-                key={project.title}
-                initial={{ opacity: 0 }}
-                whileInView={{ opacity: 1 }}
-                viewport={{ once: true, margin: '-40px' }}
-                transition={{ duration: 0.5, delay: i * 0.08 }}
-              >
-                <div className="work-divider" />
-                <motion.button
-                  className="work-row"
-                  onClick={() => setSelected(project)}
-                  initial="rest"
-                  whileHover="hover"
-                  animate="rest"
-                >
-                  <motion.div
-                    className="work-row-bg"
-                    variants={{ rest: { scaleX: 0 }, hover: { scaleX: 1 } }}
-                    transition={{ duration: 0.38, ease: [0.22, 1, 0.36, 1] }}
-                  />
-
-                  <span className="work-num">{project.num}</span>
-
-                  <div className="work-main">
-                    <div className="work-title-row">
-                      <motion.h3
-                        className="work-title"
-                        variants={{ rest: { x: 0 }, hover: { x: 6 } }}
-                        transition={{ duration: 0.3, ease: [0.22, 1, 0.36, 1] }}
-                      >
-                        {project.title}
-                      </motion.h3>
-                      <span className="work-subtitle">{project.subtitle}</span>
-                    </div>
-                    <span className="work-role">{project.role} · {project.year}</span>
-                  </div>
-
-                  <div className="work-tags">
-                    {project.tags.slice(0, 3).map((t) => (
-                      <span key={t} className="work-tag">{t}</span>
-                    ))}
-                  </div>
-
-                  <motion.span
-                    className="work-arrow"
-                    variants={{
-                      rest: { x: 0, y: 0, color: 'var(--text-3)' },
-                      hover: { x: 3, y: -3, color: 'var(--accent)' },
-                    }}
-                    transition={{ duration: 0.2 }}
-                  >
-                    ↗
-                  </motion.span>
-                </motion.button>
-              </motion.div>
-            ))}
-            <div className="work-divider" />
-          </div>
+        <div className="pcard-list">
+          {projects.map((project, i) => (
+            <ProjectCard key={project.num} project={project} index={i} />
+          ))}
         </div>
-      </section>
-
-      <Modal project={selected} onClose={() => setSelected(null)} />
-    </>
+      </div>
+    </section>
   )
 }
