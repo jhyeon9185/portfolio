@@ -2,7 +2,7 @@ import { motion } from 'framer-motion'
 import {
   SiReact, SiTypescript, SiOpenjdk, SiSpring,
   SiMysql, SiDocker, SiTailwindcss, SiGit,
-  SiSlack, SiNotion, SiFigma,
+  SiSlack, SiNotion, SiFigma, SiPython, SiOpenai,
 } from 'react-icons/si'
 import { LuFileText, LuMessagesSquare } from 'react-icons/lu'
 
@@ -13,6 +13,8 @@ const toolIcons = [
   { label: 'Java 21',    Icon: SiOpenjdk },
   { label: 'Spring',     Icon: SiSpring },
   { label: 'MySQL',      Icon: SiMysql },
+  { label: 'Python',     Icon: SiPython },
+  { label: 'OpenAI',     Icon: SiOpenai },
   { label: 'Docker',     Icon: SiDocker },
   { label: 'Git',        Icon: SiGit },
 ]

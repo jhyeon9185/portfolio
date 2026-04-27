@@ -965,6 +965,9 @@ button {
   line-height: 1.7;
   color: var(--text-2);
   margin-bottom: 1.2rem;
+  max-width: 520px;
+  word-break: keep-all;
+  white-space: pre-line;
 }
 
 .pcard-tags {
