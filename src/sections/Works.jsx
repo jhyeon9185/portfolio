@@ -273,6 +273,25 @@ const projects = [
     github: 'https://github.com/jhyeon9185/daypoo',
     pdf: `${import.meta.env.BASE_URL}portfolio_v3.pdf`,
   },
+  {
+    num: '03',
+    title: 'MOIM (모임)',
+    tagline: '가족·지인과 함께하는 일정 공유 플랫폼',
+    description: 'React + Spring Boot 풀스택으로 설계하고 배포한 모임 일정 관리 서비스입니다.\n소셜 로그인부터 실시간 알림, 초대 코드 기반 멤버 관리까지 핵심 기능을 처음부터 직접 구현했습니다.',
+    role: 'Fullstack / 기획·설계',
+    year: '2025.04',
+    tags: ['React', 'Spring Boot', 'MySQL', 'JWT', 'SSE', 'OpenAI', 'Render', 'Resend API'],
+    contributions: [
+      '카카오·구글 OAuth 2.0 소셜 로그인 및 JWT 인증 시스템 구축',
+      'SSE(Server-Sent Events) 기반 실시간 알림 시스템 설계 및 구현',
+      'UUID 기반 초대 코드 시스템 및 가입 신청/승인 멤버 관리 워크플로우 구현',
+      'SMTP 차단 이슈 해결을 위한 Resend HTTP API 전환 및 비동기 처리',
+      'OpenAI & 외부 API 연동 기반 AI 비서 \'모미\' 구현 (일정 맞춤형 날씨·공기질 안내)',
+    ],
+    github: 'https://github.com/jhyeon9185/moim',
+    deploy: 'https://moim.8o2.site',
+    pdf: `${import.meta.env.BASE_URL}portfolio_v3.pdf`,
+  },
 ]
 
 function ProjectCard({ project, index }) {
@@ -351,6 +370,12 @@ function ProjectCard({ project, index }) {
                 <a href={project.github} target="_blank" rel="noreferrer" className="pcard-link">
                   <span className="pcard-link-icon">↗</span>
                   GitHub
+                </a>
+              )}
+              {project.deploy && (
+                <a href={project.deploy} target="_blank" rel="noreferrer" className="pcard-link">
+                  <span className="pcard-link-icon">↗</span>
+                  Live Demo
                 </a>
               )}
               {project.pdf && (
