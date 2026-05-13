@@ -290,7 +290,7 @@ const projects = [
     ],
     github: 'https://github.com/jhyeon9185/moim',
     deploy: 'https://moim.8o2.site',
-    pdf: `${import.meta.env.BASE_URL}portfolio_v3.pdf`,
+    pdf: `${import.meta.env.BASE_URL}moim.pdf`,
   },
 ]
 
