@@ -280,7 +280,7 @@ const projects = [
     description: 'React + Spring Boot 풀스택으로 설계하고 배포한 모임 일정 관리 서비스입니다.\n소셜 로그인부터 실시간 알림, 초대 코드 기반 멤버 관리까지 핵심 기능을 처음부터 직접 구현했습니다.',
     role: 'Fullstack / 기획·설계',
     year: '2025.04',
-    tags: ['React', 'Spring Boot', 'MySQL', 'JWT', 'SSE', 'OpenAI', 'Render', 'Resend API'],
+    tags: ['React', 'Spring Boot', 'MySQL', 'PostgreSQL', 'JWT', 'SSE', 'OpenAI', 'Render', 'Vercel'],
     contributions: [
       '카카오·구글 OAuth 2.0 소셜 로그인 및 JWT 인증 시스템 구축',
       'SSE(Server-Sent Events) 기반 실시간 알림 시스템 설계 및 구현',
