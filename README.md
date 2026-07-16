@@ -55,7 +55,7 @@ React + Vite로 제작했으며, 진행한 프로젝트와 기술 스택, 이력
 ## Works
  
 <details open>
-<summary><b>01. 62댕냥이</b> — 유기동물 입양·임시보호 매칭 플랫폼</summary>
+<summary><br><b>01. 62댕냥이</b> — 유기동물 입양·임시보호 매칭 플랫폼</summary>
 <br>
 > 2026.01 ~ 2026.02 · 팀 프로젝트 · Backend · Spring Security · JWT 설계
  
