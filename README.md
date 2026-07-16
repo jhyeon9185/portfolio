@@ -1,6 +1,5 @@
 <div align="center">
-# Portfolio
- 
+
 **Full Stack Developer 백종현**의 개인 포트폴리오 웹사이트입니다.<br>
 React + Vite로 제작했으며, 진행한 프로젝트와 기술 스택, 이력을 소개합니다.
  
@@ -8,7 +7,6 @@ React + Vite로 제작했으며, 진행한 프로젝트와 기술 스택, 이력
  
 </div>
 <br>
-## About
  
 > 사용자 경험과 시스템을 함께 고민합니다.
  
