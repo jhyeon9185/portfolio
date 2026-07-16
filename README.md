@@ -1,7 +1,7 @@
 <div align="center">
 # Portfolio
  
-**Full Stack Developer 백종현**의 개인 포트폴리오 웹사이트입니다.
+**Full Stack Developer 백종현**의 개인 포트폴리오 웹사이트입니다.<br>
 React + Vite로 제작했으며, 진행한 프로젝트와 기술 스택, 이력을 소개합니다.
  
 [![Portfolio](https://img.shields.io/badge/🔗_Live-jhyeon9185.github.io/portfolio-2ea5a1?style=for-the-badge)](https://jhyeon9185.github.io/portfolio/)
