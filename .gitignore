@@ -26,3 +26,4 @@ dist-ssr
 # Claude & Tools
 .claude/
 handoff/
+.claude/settings.local.json

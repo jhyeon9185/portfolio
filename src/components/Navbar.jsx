@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { LuHouse, LuUser, LuBriefcase, LuMail, LuSun, LuMoon } from 'react-icons/lu'
+import { useNavigate, useLocation } from 'react-router-dom'
 import useStore from '../store/useStore'
 
 const navLinks = [
@@ -10,19 +11,28 @@ const navLinks = [
   { label: 'Contact', id: 'contact', Icon: LuMail },
 ]
 
-function scrollTo(id) {
-  document.getElementById(id)?.scrollIntoView({ behavior: 'smooth' })
-}
-
 export default function Navbar() {
-  const { isDark, toggleTheme, activeSection } = useStore()
+  const { isDark, toggleTheme, activeSection, setActiveSection } = useStore()
   const [menuOpen, setMenuOpen] = useState(false)
+  const navigate = useNavigate()
+  const location = useLocation()
 
   useEffect(() => {
     const close = () => setMenuOpen(false)
     window.addEventListener('scroll', close, { passive: true })
     return () => window.removeEventListener('scroll', close)
   }, [])
+
+  const handleNavClick = (id) => {
+    if (location.pathname !== '/') {
+      navigate('/')
+      setTimeout(() => {
+        document.getElementById(id)?.scrollIntoView({ behavior: 'smooth' })
+      }, 100)
+    } else {
+      document.getElementById(id)?.scrollIntoView({ behavior: 'smooth' })
+    }
+  }
 
   return (
     <>
@@ -38,7 +48,7 @@ export default function Navbar() {
             <button
               key={link.id}
               className={`pill-link${activeSection === link.id ? ' pill-link-active' : ''}`}
-              onClick={() => scrollTo(link.id)}
+              onClick={() => handleNavClick(link.id)}
             >
               {activeSection === link.id && (
                 <motion.div
@@ -107,7 +117,7 @@ export default function Navbar() {
                 initial={{ opacity: 0, x: -12 }}
                 animate={{ opacity: 1, x: 0 }}
                 transition={{ delay: i * 0.05 }}
-                onClick={() => { scrollTo(link.id); setMenuOpen(false) }}
+                onClick={() => { handleNavClick(link.id); setMenuOpen(false) }}
               >
                 <link.Icon size={14} />
                 {link.label}

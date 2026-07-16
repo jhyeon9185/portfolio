@@ -443,6 +443,26 @@ button {
   transform: translateY(-2px);
 }
 
+/* Aurora Button (Resume) */
+.aurora-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.85rem 1.75rem;
+  background-color: var(--accent);
+  color: #fff; /* Always white */
+  border-radius: 50px;
+  font-size: 0.88rem;
+  font-weight: 600;
+  letter-spacing: 0.02em;
+  text-decoration: none;
+  transition: transform 0.3s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.aurora-btn:hover {
+  transform: scale(1.05);
+}
+
 /* Scroll Icon (mouse wheel) */
 .scroll-icon {
   position: absolute;

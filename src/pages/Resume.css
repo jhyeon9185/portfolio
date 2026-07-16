@@ -1,0 +1,289 @@
+.resume-page {
+  min-height: 100vh;
+  background-color: var(--bg);
+  color: var(--text);
+}
+
+.resume-main {
+  padding: 150px 24px 80px;
+}
+
+.resume-container {
+  max-width: 760px;
+  margin: 0 auto;
+}
+
+/* Intro Section - Split Layout */
+.resume-intro-split {
+  display: flex;
+  flex-direction: column;
+  gap: 32px;
+  margin-bottom: 90px;
+  animation: fadeUp 0.8s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+}
+
+@media (min-width: 768px) {
+  .resume-intro-split {
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: flex-start;
+    gap: 60px;
+  }
+}
+
+@keyframes fadeUp {
+  from { opacity: 0; transform: translateY(30px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.resume-intro-left {
+  flex-shrink: 0;
+}
+
+.resume-intro-title {
+  font-size: 3.5rem;
+  font-weight: 800;
+  margin-bottom: 4px;
+  letter-spacing: -0.03em;
+  color: var(--text);
+  line-height: 1.1;
+}
+
+.resume-intro-subtitle {
+  font-size: 1.15rem;
+  font-weight: 600;
+  color: var(--accent);
+  margin-bottom: 24px;
+}
+
+.resume-intro-links {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  font-size: 0.95rem;
+}
+
+.resume-intro-links a {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  color: var(--text-2);
+  text-decoration: none;
+  transition: color var(--t);
+  font-weight: 500;
+}
+
+.resume-intro-links a:hover {
+  color: var(--accent);
+}
+
+.resume-intro-right {
+  flex-grow: 1;
+  font-size: 1.1rem;
+  color: var(--text-2);
+  line-height: 1.9;
+  letter-spacing: -0.01em;
+  word-break: keep-all;
+  padding-top: 10px; /* Align slightly with title */
+}
+
+.resume-intro-right p {
+  margin-bottom: 12px;
+}
+.resume-intro-right p:last-child {
+  margin-bottom: 0;
+}
+
+/* Sections */
+.resume-section {
+  margin-bottom: 80px;
+}
+
+.section-title {
+  font-size: 1.6rem;
+  font-weight: 700;
+  margin-bottom: 40px;
+  padding-bottom: 16px;
+  border-bottom: 1px solid var(--border);
+  letter-spacing: -0.01em;
+}
+
+.experience-item {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  margin-bottom: 56px;
+}
+
+@media (min-width: 640px) {
+  .experience-item {
+    flex-direction: row;
+    gap: 40px;
+  }
+}
+
+.exp-meta {
+  flex-shrink: 0;
+  width: 180px;
+  font-size: 0.9rem;
+  color: var(--accent);
+  font-weight: 600;
+  padding-top: 4px;
+}
+
+.exp-content {
+  flex-grow: 1;
+}
+
+.exp-role {
+  font-size: 1.25rem;
+  font-weight: 700;
+  margin-bottom: 6px;
+  color: var(--text);
+  letter-spacing: -0.01em;
+}
+
+.exp-company {
+  font-size: 1rem;
+  color: var(--accent);
+  margin-bottom: 20px;
+  font-weight: 500;
+}
+
+.exp-details {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  color: var(--text-2);
+  font-size: 1rem;
+  line-height: 1.75;
+}
+
+.exp-details li {
+  position: relative;
+  padding-left: 20px;
+  margin-bottom: 10px;
+}
+
+.exp-details li::before {
+  content: '·';
+  position: absolute;
+  left: 0;
+  color: var(--text-3);
+  font-weight: bold;
+}
+
+/* Project Links */
+.exp-links {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 10px;
+  margin-top: 20px;
+}
+
+.exp-link-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 8px 16px;
+  border-radius: 50px;
+  background-color: var(--surface);
+  border: 1px solid var(--border);
+  color: var(--text-2);
+  font-size: 0.85rem;
+  font-weight: 500;
+  text-decoration: none;
+  transition: all var(--t);
+}
+
+.exp-link-btn:hover {
+  background-color: var(--bg);
+  border-color: var(--accent);
+  color: var(--text);
+  transform: translateY(-2px);
+}
+
+/* Skills Section - Row Layout */
+.skills-table {
+  display: flex;
+  flex-direction: column;
+}
+
+.skills-row {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  padding: 32px 0;
+  border-bottom: 1px solid var(--border);
+}
+
+.skills-row:first-child {
+  padding-top: 0;
+}
+
+.skills-row:last-child {
+  border-bottom: none;
+  padding-bottom: 0;
+}
+
+@media (min-width: 640px) {
+  .skills-row {
+    flex-direction: row;
+    align-items: flex-start;
+    gap: 40px;
+  }
+}
+
+.skills-row-label {
+  flex-shrink: 0;
+  width: 140px;
+  font-size: 1.1rem;
+  font-weight: 700;
+  color: var(--text);
+  padding-top: 8px; /* Align visually with chips */
+}
+
+.skills-row-items {
+  flex-grow: 1;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.skill-chip {
+  padding: 10px 20px;
+  border-radius: 12px;
+  font-size: 0.95rem;
+  font-weight: 600;
+  cursor: default;
+  transition: all 0.3s cubic-bezier(0.22, 1, 0.36, 1);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  background-color: var(--surface);
+  border: 1px solid var(--border);
+  color: var(--text-2);
+}
+
+.skill-chip:hover {
+  transform: translateY(-4px) scale(1.02);
+  color: var(--text);
+}
+
+/* 메인 스택은 호버 시 퍼스널 컬러(accent) 테두리와 은은한 그림자 */
+.main-chip:hover {
+  border-color: var(--accent);
+  box-shadow: 0 8px 24px rgba(255, 77, 0, 0.15);
+  background-color: rgba(255, 77, 0, 0.05);
+}
+
+/* 서브 스택은 호버 시 텍스트 컬러 강조 및 밝은 테두리 */
+.sub-chip:hover {
+  border-color: var(--text-3);
+  box-shadow: 0 8px 24px rgba(255, 255, 255, 0.05);
+}
+
+[data-theme='light'] .sub-chip:hover {
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.05);
+}

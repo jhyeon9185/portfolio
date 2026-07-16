@@ -1,11 +1,11 @@
+import { Link } from 'react-router-dom'
 import { motion } from 'framer-motion'
 import {
   SiReact, SiTypescript, SiOpenjdk, SiSpring,
   SiMysql, SiDocker, SiTailwindcss, SiGit,
   SiSlack, SiNotion, SiFigma, SiPython, SiOpenai,
 } from 'react-icons/si'
-import { LuFileText, LuMessagesSquare } from 'react-icons/lu'
-
+import { LuFileText, LuMessagesSquare, LuArrowRight } from 'react-icons/lu'
 const toolIcons = [
   { label: 'React',      Icon: SiReact },
   { label: 'TypeScript', Icon: SiTypescript },
@@ -107,6 +107,12 @@ export default function About() {
               서비스 전체를 직접 구현하는 Full Stack Developer.<br />
               실제 이슈를 끝까지 파고드는 것을 중요하게 생각합니다.
             </motion.p>
+            
+            <motion.div {...fadeUp(0.15)} style={{ marginTop: '30px' }}>
+              <Link to="/resume" className="aurora-btn">
+                이력서 보기 <LuArrowRight />
+              </Link>
+            </motion.div>
           </div>
 
           <div className="about-side">
