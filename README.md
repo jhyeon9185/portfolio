@@ -12,7 +12,7 @@ React + Vite로 제작했으며, 진행한 프로젝트와 기술 스택, 이력
  
 > 사용자 경험과 시스템을 함께 고민합니다.
  
-백엔드 설계부터 프론트엔드까지, 서비스 전체를 직접 구현하는 Full Stack Developer입니다.
+백엔드 설계부터 프론트엔드까지, 서비스 전체를 직접 구현하는 Full Stack Developer입니다.<br>
 실제 이슈를 끝까지 파고드는 것을 중요하게 생각합니다.
  
 | | |
@@ -71,7 +71,7 @@ React + Vite로 제작했으며, 진행한 프로젝트와 기술 스택, 이력
  
 </details>
 <details>
-<summary><b>02. DAYPOO</b> — 실시간 공공데이터 기반 건강 관리 서비스</summary>
+<summary><br><b>02. DAYPOO</b> — 실시간 공공데이터 기반 건강 관리 서비스</summary>
 <br>
 > 2026.03 ~ 2026.04 · 3인 팀 프로젝트 · Frontend · UI/UX 설계
  
@@ -87,7 +87,7 @@ React + Vite로 제작했으며, 진행한 프로젝트와 기술 스택, 이력
  
 </details>
 <details>
-<summary><b>03. MOIM (모임)</b> — 가족·지인과 함께하는 일정 공유 플랫폼</summary>
+<summary><br><b>03. MOIM (모임)</b> — 가족·지인과 함께하는 일정 공유 플랫폼</summary>
 <br>
 > 2025.04 · 개인 프로젝트 · Fullstack / 기획·설계
  
